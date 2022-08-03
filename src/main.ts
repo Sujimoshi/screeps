@@ -2,6 +2,7 @@ import creeps from "./creeps";
 import { MinerController } from "creeps/miner";
 import { ErrorMapper } from "utils/ErrorMapper";
 import { isNewVersion, updateVersion } from "utils/version";
+import { CreepPool } from './CreepPool'
 
 declare global {
   /*
@@ -60,4 +61,36 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log('New changes pushed')
     updateVersion()
   }
+
+  const creepPool = new CreepPool()
+  creepPool.preTick()
+
+
+  creepPool.intentAcquireCreep([
+    CARRY, MOVE, WORK
+  ], 10)
+
+
+  creepPool.intentAcquireCreep([
+    CARRY, MOVE, WORK
+  ], 10)
+
+  // creepPool.intentAcquireCreep([
+  //   CARRY, MOVE, WORK
+  // ])
+
+  // creepPool.intentAcquireCreep([
+  //   CARRY, MOVE, WORK
+  // ])
+
+  const evaluations = creepPool.evaluate()
+  // console.log(JSON.stringify(evaluations, null, 2))
+  evaluations.forEach((e) => {
+    console.log(JSON.stringify(e))
+    console.log(creepPool.fulfillIntent(e))
+  })
+
+  if (isNewVersion()) console.log('New changes pushed')
+  updateVersion()
+  creepPool.postTick()
 });
