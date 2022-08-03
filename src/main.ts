@@ -1,5 +1,5 @@
 import { ErrorMapper } from "utils/ErrorMapper";
-import { isNewVersion } from "utils/verstion";
+import { isNewVersion, updateVersion, version } from "utils/version";
 import { test,v as tt } from "./memory";
 
 declare global {
@@ -32,20 +32,14 @@ declare global {
   }
 }
 
-// When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
-// This utility uses source maps to get the line numbers and file names of the original, TS source code
-const v = 20;
-const vv = 30;
-
 export const loop = ErrorMapper.wrapLoop(() => {
-  // console.log(`Current game tick is ${Game.time}; ${Memory.i} ${v} ${vv} ${tt}`, '[VI]{version} - {date}[/VI]');
-  console.log(isNewVersion() ? 'new version' : 'old version')
-  test()
-
   // Automatically delete memory of missing creeps
   for (const name in Memory.creeps) {
     if (!(name in Game.creeps)) {
       delete Memory.creeps[name];
     }
   }
+
+  if (isNewVersion()) console.log('New changes pushed')
+  updateVersion()
 });
