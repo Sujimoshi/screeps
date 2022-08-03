@@ -38,6 +38,30 @@ Finally, there are also NPM scripts that serve as aliases for these commands in 
 
 #### Important! To upload code to a private server, you must have [screepsmod-auth](https://github.com/ScreepsMods/screepsmod-auth) installed and configured!
 
+## docker-compose
+
+> Using https://github.com/screepers/screeps-launcher
+
+There is [docker-compose.yml](docker-compose.yml) that starts a server + mongo.
+This is the easiest way to get a private server mongo + redis.
+
+1. Install [docker](https://docs.docker.com/install/) (look on the left to find the correct platform).
+2. You might have to fiddle with the docker advanced settings to allow enough CPU to run the server smoothly.
+3. Rename `server.config.example.yml` to `server.config.yml` and add your steam api key into line 1
+4. Open a terminal and run `docker-compose up` to start the services. Wait until it is done starting the docker images and settle on mongo status messages.
+5. Open another terminal in that folder. Run `docker-compose exec screeps screeps-launcher cli`. This is a command-line interface to control your new private server.
+6. In the CLI, run `system.resetAllData()` to initialize the database. Unless you want to poke around, use `Ctrl-d` to exit the cli.
+7. Run `docker-compose restart screeps` to reboot the private server.
+8. Go to localhost:21025/authmod/password and set your password
+
+Your server should be up and running! Connect to it using the steam client:
+
+Choose the _Private Server_ tab and connect using those options:
+
+- Host: _localhost_
+- Port: _21025_
+- Server password: _<leave blank, unless configured otherwise>_
+
 ## Typings
 
 The type definitions for Screeps come from [typed-screeps](https://github.com/screepers/typed-screeps). If you find a problem or have a suggestion, please open an issue there.

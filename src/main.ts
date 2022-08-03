@@ -1,4 +1,5 @@
 import { ErrorMapper } from "utils/ErrorMapper";
+import { isNewVersion } from "utils/verstion";
 import { test,v as tt } from "./memory";
 
 declare global {
@@ -12,9 +13,9 @@ declare global {
   */
   // Memory extension samples
   interface Memory {
+    version: string;
     uuid: number;
     i: any[];
-    log: any;
   }
 
   interface CreepMemory {
@@ -37,7 +38,8 @@ const v = 20;
 const vv = 30;
 
 export const loop = ErrorMapper.wrapLoop(() => {
-  console.log(`Current game tick is ${Game.time}; ${Memory.i} ${v} ${vv} ${tt}`, '[VI]{version} - {date}[/VI]');
+  // console.log(`Current game tick is ${Game.time}; ${Memory.i} ${v} ${vv} ${tt}`, '[VI]{version} - {date}[/VI]');
+  console.log(isNewVersion() ? 'new version' : 'old version')
   test()
 
   // Automatically delete memory of missing creeps
