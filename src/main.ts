@@ -1,6 +1,6 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 import { isNewVersion, updateVersion, version } from "utils/version";
-import { test,v as tt } from "./memory";
+import { CreepPool } from './CreepPool'
 
 declare global {
   /*
@@ -33,13 +33,35 @@ declare global {
 }
 
 export const loop = ErrorMapper.wrapLoop(() => {
-  // Automatically delete memory of missing creeps
-  for (const name in Memory.creeps) {
-    if (!(name in Game.creeps)) {
-      delete Memory.creeps[name];
-    }
-  }
+  const creepPool = new CreepPool()
+  creepPool.preTick()
+
+
+  creepPool.intentAcquireCreep([
+    CARRY, MOVE, WORK
+  ], 10)
+
+
+  creepPool.intentAcquireCreep([
+    CARRY, MOVE, WORK
+  ], 10)
+
+  // creepPool.intentAcquireCreep([
+  //   CARRY, MOVE, WORK
+  // ])
+
+  // creepPool.intentAcquireCreep([
+  //   CARRY, MOVE, WORK
+  // ])
+
+  const evaluations = creepPool.evaluate()
+  // console.log(JSON.stringify(evaluations, null, 2))
+  evaluations.forEach((e) => {
+    console.log(JSON.stringify(e))
+    console.log(creepPool.fulfillIntent(e))
+  })
 
   if (isNewVersion()) console.log('New changes pushed')
   updateVersion()
+  creepPool.postTick()
 });
