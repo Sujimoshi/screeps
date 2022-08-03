@@ -1,6 +1,7 @@
+import creeps from "./creeps";
+import { MinerController } from "creeps/miner";
 import { ErrorMapper } from "utils/ErrorMapper";
-import { isNewVersion, updateVersion, version } from "utils/version";
-import { test,v as tt } from "./memory";
+import { isNewVersion, updateVersion } from "utils/version";
 
 declare global {
   /*
@@ -19,12 +20,11 @@ declare global {
   }
 
   interface CreepMemory {
+    target?: any
     role: string;
-    room: string;
-    working: boolean;
+    state: any
   }
 
-  // Syntax for adding proprties to `global` (ex "global.log")
   namespace NodeJS {
     interface Global {
       log: any;
@@ -32,7 +32,23 @@ declare global {
   }
 }
 
+const creepProcessor = (creep: Creep) => {
+  if (creep.memory.role) (creeps as any)[creep.memory.role].run(creep)
+}
+
+const roomProcessor = (room: Room) => {
+  MinerController.process(room)
+}
+
 export const loop = ErrorMapper.wrapLoop(() => {
+  for (const name in Game.creeps) {
+    creepProcessor(Game.creeps[name])
+  }
+
+  for (const name in Game.rooms) {
+    roomProcessor(Game.rooms[name])
+  }
+
   // Automatically delete memory of missing creeps
   for (const name in Memory.creeps) {
     if (!(name in Game.creeps)) {
@@ -40,6 +56,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  if (isNewVersion()) console.log('New changes pushed')
-  updateVersion()
+  if (isNewVersion()) {
+    console.log('New changes pushed')
+    updateVersion()
+  }
 });
