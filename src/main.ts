@@ -1,4 +1,5 @@
 import { ErrorMapper } from "utils/ErrorMapper";
+import { test,v as tt } from "./memory";
 
 declare global {
   /*
@@ -12,6 +13,7 @@ declare global {
   // Memory extension samples
   interface Memory {
     uuid: number;
+    i: any[];
     log: any;
   }
 
@@ -31,8 +33,12 @@ declare global {
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
+const v = 20;
+const vv = 30;
+
 export const loop = ErrorMapper.wrapLoop(() => {
-  console.log(`Current game tick is ${Game.time}`);
+  console.log(`Current game tick is ${Game.time}; ${Memory.i} ${v} ${vv} ${tt}`, '[VI]{version} - {date}[/VI]');
+  test()
 
   // Automatically delete memory of missing creeps
   for (const name in Memory.creeps) {
