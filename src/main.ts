@@ -1,8 +1,10 @@
 import creeps from "./creeps";
-import { MinerController } from "creeps/miner";
-import { ErrorMapper } from "utils/ErrorMapper";
-import { isNewVersion, updateVersion } from "utils/version";
+import { MinerController } from "./creeps/miner";
+import { ErrorMapper } from "./utils/ErrorMapper";
+import { isNewVersion, updateVersion } from "./utils/version";
 import { CreepPool } from './CreepPool'
+import { ActionsManager } from "./actions";
+import { sourceManager } from "./managers/source";
 
 declare global {
   /*
@@ -33,21 +35,22 @@ declare global {
   }
 }
 
-const creepProcessor = (creep: Creep) => {
-  if (creep.memory.role) (creeps as any)[creep.memory.role].run(creep)
-}
-
 const roomProcessor = (room: Room) => {
-  MinerController.process(room)
+  console.log(room.name)
+  const actionsManager = new ActionsManager(room)
+
+  sourceManager(actionsManager)(room)
+
+  actionsManager.process()
 }
 
 export const loop = ErrorMapper.wrapLoop(() => {
-  for (const name in Game.creeps) {
-    creepProcessor(Game.creeps[name])
-  }
+  // for (const name in Game.creeps) {
+  //   creepProcessor(Game.creeps[name])
+  // }
 
-  for (const name in Game.rooms) {
-    roomProcessor(Game.rooms[name])
+  for (const name in Game.spawns) {
+    roomProcessor(Game.spawns[name].room)
   }
 
   // Automatically delete memory of missing creeps
@@ -57,40 +60,35 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  if (isNewVersion()) {
-    console.log('New changes pushed')
-    updateVersion()
-  }
+  // const creepPool = new CreepPool()
+  // creepPool.preTick()
 
-  const creepPool = new CreepPool()
-  creepPool.preTick()
-
-
-  creepPool.intentAcquireCreep([
-    CARRY, MOVE, WORK
-  ], 10)
-
-
-  creepPool.intentAcquireCreep([
-    CARRY, MOVE, WORK
-  ], 10)
 
   // creepPool.intentAcquireCreep([
   //   CARRY, MOVE, WORK
-  // ])
+  // ], 10)
+
 
   // creepPool.intentAcquireCreep([
   //   CARRY, MOVE, WORK
-  // ])
+  // ], 10)
 
-  const evaluations = creepPool.evaluate()
-  // console.log(JSON.stringify(evaluations, null, 2))
-  evaluations.forEach((e) => {
-    console.log(JSON.stringify(e))
-    console.log(creepPool.fulfillIntent(e))
-  })
+  // // creepPool.intentAcquireCreep([
+  // //   CARRY, MOVE, WORK
+  // // ])
+
+  // // creepPool.intentAcquireCreep([
+  // //   CARRY, MOVE, WORK
+  // // ])
+
+  // const evaluations = creepPool.evaluate()
+  // // console.log(JSON.stringify(evaluations, null, 2))
+  // evaluations.forEach((e) => {
+  //   console.log(JSON.stringify(e))
+  //   console.log(creepPool.fulfillIntent(e))
+  // })
 
   if (isNewVersion()) console.log('New changes pushed')
   updateVersion()
-  creepPool.postTick()
+  // creepPool.postTick()
 });

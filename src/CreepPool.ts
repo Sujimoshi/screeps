@@ -1,4 +1,4 @@
-import { Tickable } from 'interfaces/index'
+import { Tickable } from './interfaces/index'
 
 type Capabilities = Array<BodyPartConstant>
 
