@@ -2,10 +2,10 @@ import { Action } from ".";
 import { handle } from "../utils/error";
 import { CreepHaveBodyPart, CreepIsInRangeTo } from "./prerequisites";
 
-export class MineAction extends Action {
+export class HarvestAction extends Action {
 
     constructor(public source: Source) {
-        super('MineAction')
+        super('HarvestAction')
     }
 
     prereqs = (creep: Creep) => [
@@ -17,6 +17,6 @@ export class MineAction extends Action {
         return handle(creep.harvest(this.source), 'Creep.harvest')
     }
 
-    cost = () => 1
+    cost = (creep: Creep) => creep.getActiveBodyparts(CARRY) * 100
 
 }

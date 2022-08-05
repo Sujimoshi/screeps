@@ -13,11 +13,12 @@ export class MoveAction extends Action {
     ]
 
     action = (creep: Creep): boolean => {
-        return handle(creep.moveTo(this.target, { visualizePathStyle: { stroke: '#ffffff' } }), 'Creep.moveTo')
+        if (creep.fatigue > 0) return true
+        return handle(creep.moveTo(this.target, {
+            visualizePathStyle: { stroke: '#ffffff' }
+        }), 'Creep.moveTo')
     }
 
-    cost = (creep: Creep) => {
-        return creep.pos.findPathTo(this.target).length
-    }
+    cost = (creep: Creep) => creep.pos.findPathTo(this.target).length
 
 }

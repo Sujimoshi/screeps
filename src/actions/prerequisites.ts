@@ -16,7 +16,36 @@ export class CreepIsInRangeTo extends Prerequisite {
         super()
     }
 
-    meets = (creep: Creep) => creep.pos.inRangeTo(this.pos, this.range)
+    meets = (creep: Creep) => {
+        const res = creep.pos.inRangeTo(this.pos, this.range)
+        return res
+    }
 
     toMeet = () => new MoveAction(this.pos)
+}
+
+export class CreepResourceCapacity extends Prerequisite {
+    constructor(
+        public resourceType: ResourceConstant,
+        public type: '<' | '>' | '<=' | '>=',
+        public capacityInPercents: number
+    ) {
+        super()
+    }
+
+    meets = (creep: Creep) => {
+        const usedCapacity = creep.store.getUsedCapacity(this.resourceType)
+        const capacityPercent = creep.store.getCapacity(this.resourceType) * this.capacityInPercents
+        return {
+            '>': usedCapacity > capacityPercent,
+            '<': usedCapacity < capacityPercent,
+            '>=': usedCapacity >= capacityPercent,
+            '<=': usedCapacity <= capacityPercent,
+        }[this.type]
+    }
+
+    toMeet = (creep: Creep) => {
+        return null
+    }
+
 }

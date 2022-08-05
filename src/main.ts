@@ -1,10 +1,11 @@
-import creeps from "./creeps";
-import { MinerController } from "./creeps/miner";
 import { ErrorMapper } from "./utils/ErrorMapper";
 import { isNewVersion, updateVersion } from "./utils/version";
-import { CreepPool } from './CreepPool'
 import { ActionsManager } from "./actions";
 import { sourceManager } from "./managers/source";
+import { spawnManager } from "./managers/spawn";
+import { controllerManager } from "./managers/controller";
+import { resourceManager } from "./managers/resource";
+import { table } from "table";
 
 declare global {
   /*
@@ -23,9 +24,7 @@ declare global {
   }
 
   interface CreepMemory {
-    target?: any
-    role: string;
-    state: any
+    room: string
   }
 
   namespace NodeJS {
@@ -39,12 +38,20 @@ const roomProcessor = (room: Room) => {
   console.log(room.name)
   const actionsManager = new ActionsManager(room)
 
+  spawnManager(actionsManager)(room)
+  controllerManager(actionsManager)(room)
+  resourceManager(actionsManager)(room)
   sourceManager(actionsManager)(room)
 
   actionsManager.process()
+  actionsManager.log()
 }
 
 export const loop = ErrorMapper.wrapLoop(() => {
+  console.table = (data: any) => console.log(table(data))
+  console.log('\n'.repeat(15))
+
+
   // for (const name in Game.creeps) {
   //   creepProcessor(Game.creeps[name])
   // }
@@ -91,4 +98,5 @@ export const loop = ErrorMapper.wrapLoop(() => {
   if (isNewVersion()) console.log('New changes pushed')
   updateVersion()
   // creepPool.postTick()
+
 });
