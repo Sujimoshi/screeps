@@ -1,30 +1,34 @@
-import { Prerequisite } from "."
-import { MoveAction } from "./move"
+import { TaskCondition } from "../core/TaskManager"
+import { MoveTask } from "./move"
+import { WaitTask } from "./wait"
 
-export class CreepHaveBodyPart extends Prerequisite {
+export class CanMove extends TaskCondition {
+    satisfied = (creep: Creep) => creep.fatigue <= 0
+
+    satisfy = () => new WaitTask()
+}
+
+export class HasBodyPart extends TaskCondition {
     constructor(public part: BodyPartConstant) {
         super()
     }
 
-    meets = (creep: Creep) => creep.getActiveBodyparts(this.part) > 0
+    satisfied = (creep: Creep) => creep.getActiveBodyparts(this.part) > 0
 
-    toMeet = () => null
+    satisfy = () => null
 }
 
-export class CreepIsInRangeTo extends Prerequisite {
+export class IsInRangeTo extends TaskCondition {
     constructor(public pos: RoomPosition, public range: number) {
         super()
     }
 
-    meets = (creep: Creep) => {
-        const res = creep.pos.inRangeTo(this.pos, this.range)
-        return res
-    }
+    satisfied = (creep: Creep) => creep.pos.inRangeTo(this.pos, this.range)
 
-    toMeet = () => new MoveAction(this.pos)
+    satisfy = () => new MoveTask(this.pos)
 }
 
-export class CreepResourceCapacity extends Prerequisite {
+export class HasUsedResourceCapacity extends TaskCondition {
     constructor(
         public resourceType: ResourceConstant,
         public type: '<' | '>' | '<=' | '>=',
@@ -33,7 +37,7 @@ export class CreepResourceCapacity extends Prerequisite {
         super()
     }
 
-    meets = (creep: Creep) => {
+    satisfied = (creep: Creep) => {
         const usedCapacity = creep.store.getUsedCapacity(this.resourceType)
         const capacityPercent = creep.store.getCapacity(this.resourceType) * this.capacityInPercents
         return {
@@ -44,8 +48,6 @@ export class CreepResourceCapacity extends Prerequisite {
         }[this.type]
     }
 
-    toMeet = (creep: Creep) => {
-        return null
-    }
+    satisfy = (creep: Creep) => null
 
 }

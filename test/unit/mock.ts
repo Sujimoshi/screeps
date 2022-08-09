@@ -5,7 +5,9 @@ export const Game: {
   time: any;
 } = {
   creeps: {},
-  rooms: [],
+  rooms: {
+    'N': { }
+  },
   spawns: {},
   time: 12345
 };
